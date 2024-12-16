@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
-    }
     stages {
         stage('Clone Repository') {
             steps {
@@ -11,20 +8,12 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t your-dockerhub-username/coursework-image:1.0 .'
+                sh 'docker build -t coursework-image:1.0 .'
             }
         }
-        stage('Push Docker Image') {
+        stage('Run Docker Container') {
             steps {
-                withDockerRegistry(credentialsId: 'dockerhub-credentials-id', url: '') {
-                    sh 'docker push your-dockerhub-username/coursework-image:1.0'
-                }
-            }
-        }
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
+                sh 'docker run -d -p 8080:8080 coursework-image:1.0'
             }
         }
     }
