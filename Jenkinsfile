@@ -12,9 +12,9 @@ pipeline {
             }
         }
         stage('Run Docker Container') {
-            steps {
-                sh 'docker run -d -p 8080:8080 coursework-image:1.0'
-            }
+    steps {
+        sh 'docker run -d -p 9090:8080 coursework-image:1.0'
+          }
         }
     }
 }
