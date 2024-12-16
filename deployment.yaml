@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coursework-deployment
+  labels:
+    app: coursework
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: coursework
+  template:
+    metadata:
+      labels:
+        app: coursework
+    spec:
+      containers:
+      - name: coursework-container
+        image: coursework-image:1.0
+        ports:
+        - containerPort: 8080
