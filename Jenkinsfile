@@ -2,9 +2,11 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = "yourdockerhubusername/coursework-image:1.0"  
-        DOCKER_HUB_CREDENTIALS = credentials('')  // 
-        GITHUB_REPO = "https://github.com/brogoth/Coursework-2.git"  // The GitHub repository URL
+        DOCKER_IMAGE = "yourdockerhubusername/coursework-image:1.0"  // Replace with my DockerHub username and image name if it ever uninstalls
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials-id')  // Replace with my DockerHub credentials ID if i can ever access
+        GITHUB_REPO = "https://github.com/brogoth/Coursework-2.git"  // My GitHub repository URL
+        K8S_NAMESPACE = "default"  // Kubernetes namespace to deploy to 
+        DEPLOYMENT_NAME = "your-deployment-name"  // The Kubernetes deployment name
     }
 
     stages {
@@ -41,7 +43,6 @@ pipeline {
         stage('Push Docker Image to DockerHub') {
             steps {
                 script {
-                    // Log in to DockerHub and push the image
                     withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'brogoth', passwordVariable: 'kiKuzz10!')]) {
                         sh '''
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
@@ -52,6 +53,16 @@ pipeline {
             }
         }
 
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Update the Kubernetes deployment with the new image using rolling update
+                    sh '''
+                    kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
+                    kubectl rollout status deployment/${DEPLOYMENT_NAME} --namespace=${K8S_NAMESPACE}
+                    '''
+                }
+            }
+        }
     }
 }
-
