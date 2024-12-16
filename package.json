@@ -1,0 +1,10 @@
+{
+  "name": "devops-coursework-2",
+  "version": "1.0.0",
+  "description": "A simple Node.js application for DevOps Coursework 2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}
