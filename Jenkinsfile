@@ -1,9 +1,12 @@
 pipeline {
     agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
+    }
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'git@github.com:brogoth/Coursework-2.git'
+                git branch: 'main', url: 'https://github.com/brogoth/Coursework-2.git'
             }
         }
         stage('Build Docker Image') {
@@ -13,15 +16,15 @@ pipeline {
         }
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                withDockerRegistry(credentialsId: 'dockerhub-credentials-id', url: '') {
                     sh 'docker push your-dockerhub-username/coursework-image:1.0'
                 }
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f deployment.yml'
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
             }
         }
     }
